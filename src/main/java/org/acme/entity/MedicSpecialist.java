@@ -7,6 +7,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.List;
 
+
 @Entity
 @Table(name = "medic_specialist")
 public class MedicSpecialist extends PanacheEntity {
@@ -22,4 +23,7 @@ public class MedicSpecialist extends PanacheEntity {
 
     @OneToMany(mappedBy = "medicSpecialist")
     public List<ConsultationHours> consultationHours;
+    
+    @OneToMany(mappedBy = "medicSpecialist")
+    public List<Shift> shift;
 }
