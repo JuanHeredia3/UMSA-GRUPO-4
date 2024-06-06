@@ -4,7 +4,7 @@ package org.acme.entity;
 
 import java.time.LocalTime;
 import java.util.Date;
-
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,10 +17,10 @@ import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name = "shifts")
-public class Shift{
+public class Shift extends PanacheEntityBase{
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long shiftId;
 	
 	@Column(name = "pacientName")
