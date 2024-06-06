@@ -1,7 +1,5 @@
 package org.acme.resource;
 
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-
 import java.net.URI;
 
 import org.acme.entity.Shift;
@@ -19,7 +17,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
-@Path("/Shifts")@Produces(MediaType.APPLICATION_JSON)
+@Path("/Shifts")
+@Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ShiftResource {
 
