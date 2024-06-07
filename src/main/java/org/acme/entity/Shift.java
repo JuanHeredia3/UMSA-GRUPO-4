@@ -1,7 +1,5 @@
 package org.acme.entity;
 
-
-
 import java.time.LocalTime;
 import java.util.Date;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
@@ -11,111 +9,117 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import java.util.List;
 
 @Entity
 @Table(name = "shifts")
-public class Shift extends PanacheEntityBase{
+public class Shift extends PanacheEntityBase {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long shiftId;
-	
-	@Column(name = "pacientName")
-	private String pacientName;
-	
-	@Column(name = "shiftDate")
-	@Temporal(TemporalType.DATE)
-	private Date shiftDate;
-	
-	@Column(name = "startTime")
-	@Temporal(TemporalType.TIME)
-	private LocalTime startTime;
-	
-	@Column(name = "endTime")
-	@Temporal(TemporalType.TIME)
-	private LocalTime endTime;
-	
-	@Column(name = "consultation")
-	private String consultation;
-	
-	@ManyToOne
-	private MedicSpecialist medicSpecialist;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long shiftId;
 
-	
-	
-	public Shift() {
-		super();
-	}
+    @Column(name = "pacient_name")
+    private String pacientName;
 
-	public Shift(Long shiftId, String pacientName, Date shiftDate, LocalTime startTime, LocalTime endTime,
-			String consultation, MedicSpecialist medicSpecialist) {
-		super();
-		this.shiftId = shiftId;
-		this.pacientName = pacientName;
-		this.shiftDate = shiftDate;
-		this.startTime = startTime;
-		this.endTime = endTime;
-		this.consultation = consultation;
-		this.medicSpecialist = medicSpecialist;
-	}
+    @Column(name = "shift_date")
+    @Temporal(TemporalType.DATE)
+    private Date shiftDate;
 
-	public Long getShiftId() {
-		return shiftId;
-	}
+    @Column(name = "start_time")
+    private LocalTime startTime;
 
-	public void setShiftId(Long shiftId) {
-		this.shiftId = shiftId;
-	}
+    @Column(name = "end_time")
+    private LocalTime endTime;
 
-	public String getPacientName() {
-		return pacientName;
-	}
+    @Column(name = "consultation")
+    private String consultation;
 
-	public void setPacientName(String pacientName) {
-		this.pacientName = pacientName;
-	}
+    @ManyToOne
+    private MedicSpecialist medicSpecialist;
 
-	public Date getShiftDate() {
-		return shiftDate;
-	}
+    @OneToMany
+    private List<Recipe> recipes;
 
-	public void setShiftDate(Date shiftDate) {
-		this.shiftDate = shiftDate;
-	}
+    
+    public Shift() {}
 
-	public LocalTime getStartTime() {
-		return startTime;
-	}
+    public Shift(String pacientName, Date shiftDate, LocalTime startTime, LocalTime endTime, String consultation, MedicSpecialist medicSpecialist, List<Recipe> recipes) {
+        this.pacientName = pacientName;
+        this.shiftDate = shiftDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.consultation = consultation;
+        this.medicSpecialist = medicSpecialist;
+        this.recipes = recipes;
+    }
 
-	public void setStartTime(LocalTime startTime) {
-		this.startTime = startTime;
-	}
+    public Long getShiftId() {
+        return shiftId;
+    }
 
-	public LocalTime getEndTime() {
-		return endTime;
-	}
+    public void setShiftId(Long shiftId) {
+        this.shiftId = shiftId;
+    }
 
-	public void setEndTime(LocalTime endTime) {
-		this.endTime = endTime;
-	}
+    public String getPacientName() {
+        return pacientName;
+    }
 
-	public String getConsultation() {
-		return consultation;
-	}
+    public void setPacientName(String pacientName) {
+        this.pacientName = pacientName;
+    }
 
-	public void setConsultation(String consultation) {
-		this.consultation = consultation;
-	}
+    public Date getShiftDate() {
+        return shiftDate;
+    }
 
-	public MedicSpecialist getMedicSpecialist() {
-		return medicSpecialist;
-	}
+    public void setShiftDate(Date shiftDate) {
+        this.shiftDate = shiftDate;
+    }
 
-	public void setMedicSpecialist(MedicSpecialist medicSpecialist) {
-		this.medicSpecialist = medicSpecialist;
-	}
-	
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public String getConsultation() {
+        return consultation;
+    }
+
+    public void setConsultation(String consultation) {
+        this.consultation = consultation;
+    }
+
+    public MedicSpecialist getMedicSpecialist() {
+        return medicSpecialist;
+    }
+
+    public void setMedicSpecialist(MedicSpecialist medicSpecialist) {
+        this.medicSpecialist = medicSpecialist;
+    }
+    
+    public List<Recipe> getRecipes() {
+        return recipes;
+    }
+
+    public void setRecipes(List<Recipe> recipes) {
+        this.recipes = recipes;
+    }
 }
+

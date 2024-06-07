@@ -20,11 +20,7 @@ public class ShiftService {
     @Transactional
     public boolean addShift(Shift shift) {
         shiftRepository.persist(shift);
-        if (shiftRepository.isPersistent(shift)) {
-            return true;
-        } else {
-            return false;
-        }
+        return shiftRepository.isPersistent(shift);
     }
 
     @Transactional
@@ -44,5 +40,4 @@ public class ShiftService {
     public boolean deleteShift(Long shiftId) {
         return shiftRepository.deleteById(shiftId);
     }
-
 }
