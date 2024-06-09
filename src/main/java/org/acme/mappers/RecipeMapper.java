@@ -14,6 +14,6 @@ public interface RecipeMapper {
     @Mapping(target = "id", ignore = true)
     Recipe toEntity(RecipeDto recipeDto);
     
-    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "shift", ignore = true)
     Recipe toEntity(NewRecipeDto newRecipeDto);
 }

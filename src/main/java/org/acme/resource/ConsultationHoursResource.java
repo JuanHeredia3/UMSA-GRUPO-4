@@ -53,6 +53,7 @@ public class ConsultationHoursResource {
         }
     }
     
+    
     @POST
     @Path("/Create")
     @Operation(summary = "Create a new consultation hour", description = "Creates a new consultation hour.")
@@ -66,6 +67,10 @@ public class ConsultationHoursResource {
         try {
             ConsultationHoursDto created = consultationHoursService.create(newConsultationHourDto);
             return Response.status(Response.Status.CREATED).entity(created).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(e.getMessage())
+                    .build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("An error occurred while processing your request")
