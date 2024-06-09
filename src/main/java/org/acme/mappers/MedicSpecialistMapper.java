@@ -1,20 +1,24 @@
 package org.acme.mappers;
 
 import org.acme.dtos.MedicSpecialistDto;
+import org.acme.dtos.NewMedicSpecialist;
 import org.acme.entity.MedicSpecialist;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
-@Mapper(uses = ConsultationHoursMapper.class, componentModel = "cdi")
+@Mapper(componentModel = "cdi")
 public interface MedicSpecialistMapper {
     
-    MedicSpecialistMapper INSTANCE = Mappers.getMapper(MedicSpecialistMapper.class);
-    
     @Mapping(source = "consultationHours", target = "consultationHours")
+    @Mapping(source = "medicalSpeciality", target = "medicalSpecialty")
     MedicSpecialistDto toDto(MedicSpecialist medicSpecialist);
 
     @Mapping(source = "consultationHours", target = "consultationHours")
+    @Mapping(source = "medicalSpecialty", target = "medicalSpeciality")
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "shift", ignore = true)
     MedicSpecialist toEntity(MedicSpecialistDto medicSpecialistDto);
+    
+    @Mapping(target = "id", ignore = true)
+    MedicSpecialist toEntity(NewMedicSpecialist newMedicSpecialist);
 }

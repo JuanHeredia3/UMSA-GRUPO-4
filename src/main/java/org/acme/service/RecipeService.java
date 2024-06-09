@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.acme.dtos.NewRecipeDto;
 import org.acme.dtos.RecipeDto;
 import org.acme.entity.Recipe;
 import org.acme.mappers.RecipeMapper;
@@ -37,6 +38,12 @@ public class RecipeService {
         }
     }
 
+    @Transactional
+    public RecipeDto create(NewRecipeDto newRecipe) {
+        Recipe recipe = mapper.toEntity(newRecipe);
+        recipeRepository.persist(recipe);
+        return mapper.toDto(recipe);
+    }
 
     @Transactional
     public boolean deleteRecipe(Long id) {

@@ -3,15 +3,14 @@ package org.acme.resource;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.acme.dtos.ConsultationHoursDto;
-import org.acme.entity.ConsultationHours;
-import org.acme.mappers.ConsultationHoursMapper;
+import org.acme.dtos.NewConsultationHourDto;
 import org.acme.service.ConsultationHoursService;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -47,6 +46,26 @@ public class ConsultationHoursResource {
         }
 
         return Response.ok(consultationHoursList).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("An error occurred while processing your request")
+                    .build();
+        }
+    }
+    
+    @POST
+    @Path("/Create")
+    @Operation(summary = "Create a new consultation hour", description = "Creates a new consultation hour.")
+    @APIResponses({
+        @APIResponse(responseCode = "201", description = "Consultation hour created", 
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = NewConsultationHourDto.class))),
+        @APIResponse(responseCode = "400", description = "Invalid input"),
+        @APIResponse(responseCode = "500", description = "Internal server error")
+    })
+    public Response create(NewConsultationHourDto newConsultationHourDto) {
+        try {
+            ConsultationHoursDto created = consultationHoursService.create(newConsultationHourDto);
+            return Response.status(Response.Status.CREATED).entity(created).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("An error occurred while processing your request")

@@ -4,12 +4,14 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
+import org.acme.dtos.NewRecipeDto;
 import org.acme.dtos.RecipeDto;
 import org.acme.service.RecipeService;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -92,6 +94,25 @@ public class RecipeResource {
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("An error occurred while processing your request")
+                    .build();
+        }
+    }
+    
+    @POST
+    @Path("/Create")
+    @Operation(summary = "Create a new recipe", description = "Creates a new recipe.")
+    @APIResponses({
+        @APIResponse(responseCode = "201", description = "Recipe created",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = RecipeDto.class))),
+        @APIResponse(responseCode = "400", description = "Invalid input")
+    })
+    public Response create(NewRecipeDto newRecipe) {
+        try {
+            RecipeDto createdRecipe = recipeService.create(newRecipe);
+            return Response.status(Response.Status.CREATED).entity(createdRecipe).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Invalid input")
                     .build();
         }
     }

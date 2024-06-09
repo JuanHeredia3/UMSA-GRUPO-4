@@ -1,11 +1,13 @@
 package org.acme.dtos;
 
-import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.Date;
 
-public class ConsultationHoursDto {
-    public DayOfWeek dayOfWeek;
+public class NewShiftDto {
+    public String pacientName;
+    public Date shiftDate;
     public LocalTime startTime;
     public LocalTime endTime;
+    public String consultation;
     public MedicSpecialistDto medicSpecialist;
 }
