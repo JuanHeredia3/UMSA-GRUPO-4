@@ -1,6 +1,7 @@
 package org.acme.entity;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -21,9 +22,9 @@ public class MedicSpecialist extends PanacheEntity {
     @Column(name = "consultation_location")
     public String consultationLocation;
 
-    @OneToMany(mappedBy = "medicSpecialist")
+    @OneToMany(mappedBy = "medicSpecialist", cascade = CascadeType.ALL, orphanRemoval = true)
     public List<ConsultationHours> consultationHours;
     
-    @OneToMany(mappedBy = "medicSpecialist")
+    @OneToMany(mappedBy = "medicSpecialist", cascade = CascadeType.ALL, orphanRemoval = true)
     public List<Shift> shift;
 }

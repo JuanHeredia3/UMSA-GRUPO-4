@@ -7,5 +7,5 @@ public class NewRecipeDto {
 
     public Date date;
     public String description;
-    public Shift shift;
+    public Long shiftId;
 }
