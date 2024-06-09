@@ -6,6 +6,8 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.acme.dtos.MedicSpecialistDto;
+import org.acme.dtos.NewMedicSpecialist;
+import org.acme.entity.MedicSpecialist;
 import org.acme.mappers.MedicSpecialistMapper;
 import org.acme.repository.MedicSpecialistRepository;
 
@@ -22,5 +24,12 @@ public class MedicSpecialistService {
       return medicSpecialistRepository.listAll().stream()
               .map(MedicSpecialist -> mapper.toDto(MedicSpecialist))
                     .collect(Collectors.toList());
+    }
+    
+    @Transactional
+    public MedicSpecialistDto create(NewMedicSpecialist newMedicSpecialist) {
+        MedicSpecialist medicSpecialist = mapper.toEntity(newMedicSpecialist);
+        medicSpecialistRepository.persist(medicSpecialist);
+        return mapper.toDto(medicSpecialist);
     }
 }

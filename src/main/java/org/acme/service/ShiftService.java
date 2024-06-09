@@ -7,6 +7,8 @@ import org.acme.repository.ShiftRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.acme.dtos.NewShiftDto;
+import org.acme.dtos.ShiftDto;
 
 @ApplicationScoped
 public class ShiftService {
@@ -15,12 +17,13 @@ public class ShiftService {
     ShiftRepository shiftRepository;
 
     @Inject
-    ShiftMapper shiftMapper;
+    ShiftMapper mapper;
 
     @Transactional
-    public boolean addShift(Shift shift) {
+    public ShiftDto create(NewShiftDto newShift) {
+        Shift shift = mapper.toEntity(newShift);
         shiftRepository.persist(shift);
-        return shiftRepository.isPersistent(shift);
+        return mapper.toDto(shift);
     }
 
     @Transactional
