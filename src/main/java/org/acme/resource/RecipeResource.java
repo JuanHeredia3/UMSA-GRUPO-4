@@ -103,17 +103,17 @@ public class RecipeResource {
     @Operation(summary = "Create a new recipe", description = "Creates a new recipe.")
     @APIResponses({
         @APIResponse(responseCode = "201", description = "Recipe created",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = RecipeDto.class))),
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = RecipeDto.class))),
         @APIResponse(responseCode = "400", description = "Invalid input")
     })
     public Response create(NewRecipeDto newRecipe) {
         try {
             RecipeDto createdRecipe = recipeService.create(newRecipe);
             return Response.status(Response.Status.CREATED).entity(createdRecipe).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid shiftId").build();
         } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Invalid input")
-                    .build();
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid input").build();
         }
     }
 }

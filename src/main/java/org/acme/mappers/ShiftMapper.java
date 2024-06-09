@@ -9,14 +9,14 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "cdi")
 public interface ShiftMapper {
 
-    @Mapping(source = "medicSpecialist", target = "medicSpecialist")
+    @Mapping(source = "medicSpecialist.id", target = "medicSpecialistId")
     ShiftDto toDto(Shift shift);
 
-    @Mapping(source = "medicSpecialist", target = "medicSpecialist")
-    @Mapping(target = "shiftId", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "medicSpecialist", ignore = true)
     Shift toEntity(ShiftDto shiftDto);
     
-    @Mapping(source = "medicSpecialist", target = "medicSpecialist")
-    @Mapping(target = "shiftId", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "medicSpecialist", ignore = true)
     Shift toEntity(NewShiftDto newShiftDto);
 }

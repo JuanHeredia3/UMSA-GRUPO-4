@@ -7,5 +7,5 @@ public class NewConsultationHourDto {
     public DayOfWeek dayOfWeek;
     public LocalTime startTime;
     public LocalTime endTime;
-    public MedicSpecialistDto medicSpecialist;
+    public Long medicSpecialistId;
 }

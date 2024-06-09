@@ -8,16 +8,14 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "cdi")
 public interface ConsultationHoursMapper {
-    
-    @Mapping(source = "medicSpecialist", target = "medicSpecialist")
+
+    @Mapping(source = "medicSpecialist.id", target = "medicSpecialistId")
     ConsultationHoursDto toDto(ConsultationHours consultationHours);
 
-    
-    @Mapping(source = "medicSpecialist", target = "medicSpecialist")
     @Mapping(target = "id", ignore = true)
     ConsultationHours toEntity(ConsultationHoursDto consultationHoursDto);
     
-    @Mapping(source = "medicSpecialist", target = "medicSpecialist")
     @Mapping(target = "id", ignore = true)
+    @Mapping(source = "medicSpecialistId", target = "medicSpecialist.id")
     ConsultationHours toEntity(NewConsultationHourDto newConsultationHourDto);
 }

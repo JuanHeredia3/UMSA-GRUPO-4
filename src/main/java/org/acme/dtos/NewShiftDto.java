@@ -9,5 +9,5 @@ public class NewShiftDto {
     public LocalTime startTime;
     public LocalTime endTime;
     public String consultation;
-    public MedicSpecialistDto medicSpecialist;
+    public Long medicSpecialistId;
 }
