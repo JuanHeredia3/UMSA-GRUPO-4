@@ -3,12 +3,14 @@ package org.acme.resource;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 import org.acme.dtos.MedicSpecialistDto;
+import org.acme.dtos.NewMedicSpecialist;
 import org.acme.service.MedicSpecialistService;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -48,6 +50,25 @@ public class MedicSpecialistResource {
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("An error occurred while processing your request")
+                    .build();
+        }
+    }
+    
+    @POST
+    @Path("/Create")
+    @Operation(summary = "Create a new medical specialist", description = "Creates a new medical specialist.")
+    @APIResponses({
+        @APIResponse(responseCode = "201", description = "Medical specialist created", 
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MedicSpecialistDto.class))),
+        @APIResponse(responseCode = "400", description = "Invalid input")
+    })
+    public Response create(NewMedicSpecialist newMedicSpecialist) {
+        try {
+            MedicSpecialistDto createdMedicSpecialist = medicSpecialistService.create(newMedicSpecialist);
+            return Response.status(Response.Status.CREATED).entity(createdMedicSpecialist).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Invalid input")
                     .build();
         }
     }
