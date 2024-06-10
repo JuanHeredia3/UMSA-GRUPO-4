@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.acme.dtos.NewShiftDto;
 import org.acme.dtos.ShiftDto;
+import org.acme.dtos.UpdateShiftDto;
 import org.acme.entity.MedicSpecialist;
 import org.acme.repository.MedicSpecialistRepository;
 
@@ -47,14 +48,14 @@ public class ShiftService {
     }
 
     @Transactional
-    public boolean updateShift(Long id, ShiftDto shiftDto) {
-
+    public boolean updateShift(Long id, UpdateShiftDto updateShiftDto) {
         Shift auxShift = shiftRepository.findById(id);
 
         if (auxShift == null) {
             return false;
         } else {
-            shiftRepository.getEntityManager().merge(shiftDto);
+            auxShift.pacientName = updateShiftDto.pacientName;
+            auxShift.consultation = updateShiftDto.consultation;
             return true;
         }
     }

@@ -6,4 +6,5 @@ public class RecipeDto {
     public Long id;
     public Date date;
     public String description;
+    public Long shiftId;
 }

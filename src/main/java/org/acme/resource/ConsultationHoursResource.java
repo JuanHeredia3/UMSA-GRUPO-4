@@ -2,12 +2,15 @@ package org.acme.resource;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import java.util.List;
 import org.acme.dtos.ConsultationHoursDto;
 import org.acme.dtos.NewConsultationHourDto;
@@ -76,5 +79,17 @@ public class ConsultationHoursResource {
                     .entity("An error occurred while processing your request")
                     .build();
         }
+    }
+    
+    @DELETE
+    @Path("/Delete/{id}")
+    @Operation(summary = "Delete a consultation hour", description = "Deletes an existing consultation hour by ID.")
+    @APIResponses({
+        @APIResponse(responseCode = "204", description = "Consultation hour deleted successfully"),
+        @APIResponse(responseCode = "404", description = "Consultation hour not found")
+    })
+    public Response deleteShiftById(@PathParam("id") Long id) {
+        boolean deleted = consultationHoursService.delete(id);
+        return deleted ? Response.noContent().build() : Response.status(Status.NOT_FOUND).build();
     }
 }

@@ -2,15 +2,20 @@ package org.acme.resource;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import java.util.List;
 import org.acme.dtos.MedicSpecialistDto;
 import org.acme.dtos.NewMedicSpecialist;
+import org.acme.dtos.UpdateMedicSpecialistDto;
 import org.acme.service.MedicSpecialistService;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -72,4 +77,38 @@ public class MedicSpecialistResource {
                     .build();
         }
     }
+    
+    @DELETE
+    @Path("/Delete/{id}")
+    @Operation(summary = "Delete a medic specialist", description = "Deletes an existing medic specialist by ID.")
+    @APIResponses({
+        @APIResponse(responseCode = "204", description = "Medic specialist deleted successfully"),
+        @APIResponse(responseCode = "404", description = "Medic specialist not found")
+    })
+    public Response deleteShiftById(@PathParam("id") Long id) {
+        boolean deleted = medicSpecialistService.delete(id);
+        return deleted ? Response.noContent().build() : Response.status(Status.NOT_FOUND).build();
+    }
+    
+    @PUT
+    @Path("/Update/{id}")
+    @Operation(summary = "Update medical specialist", description = "Updates the name, location, and specialty of a medical specialist.")
+    @APIResponses({
+        @APIResponse(responseCode = "200", description = "Medical specialist updated",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MedicSpecialistDto.class))),
+        @APIResponse(responseCode = "404", description = "Medical specialist not found")
+    })
+    public Response update(@PathParam("id") Long id, UpdateMedicSpecialistDto updateDto) {
+        try {
+            MedicSpecialistDto updatedMedicSpecialist = medicSpecialistService.update(id, updateDto);
+            return Response.ok(updatedMedicSpecialist).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("An error occurred while processing your request")
+                    .build();
+        }
+    }
+
 }
