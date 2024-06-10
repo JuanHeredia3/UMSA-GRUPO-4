@@ -15,38 +15,41 @@ import org.acme.repository.MedicSpecialistRepository;
 
 @ApplicationScoped
 public class ConsultationHoursService {
+
     @Inject
     ConsultationHoursRepository consultationHoursRepository;
-    
+
     @Inject
     MedicSpecialistRepository medicSpecialistRepository;
-    
+
     @Inject
-    ConsultationHoursMapper mapper; 
-    
-@Transactional
-public List<ConsultationHoursDto> getAll(){
-    List<Object> mixedList = consultationHoursRepository.listAll(); // Assuming this list might contain different types
-    return mixedList.stream()
-                    .filter(ConsultationHours.class::isInstance) // Ensure only ConsultationHours instances are processed
-                    .map(ConsultationHours.class::cast)
-                    .map(consultationHours -> mapper.toDto(consultationHours))
-                    .collect(Collectors.toList());
-}
-    
+    ConsultationHoursMapper mapper;
+
+    @Transactional
+    public List<ConsultationHoursDto> getAll() {
+        return consultationHoursRepository.listAll().stream()
+                .map(consultationHours -> mapper.toDto(consultationHours))
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public ConsultationHoursDto create(NewConsultationHourDto newConsultationHourDto) {
         MedicSpecialist medicSpecialist = medicSpecialistRepository.findById(newConsultationHourDto.medicSpecialistId);
-        
+
         if (medicSpecialist == null) {
             throw new IllegalArgumentException("Medical specialist not found");
         }
-        
+
         ConsultationHours consultationHours = mapper.toEntity(newConsultationHourDto);
         consultationHours.medicSpecialist = medicSpecialist;
-        
+
         consultationHoursRepository.persist(consultationHours);
-        
+
         return mapper.toDto(consultationHours);
+    }
+    
+    @Transactional
+    public boolean delete(Long id) {
+        return consultationHoursRepository.deleteById(id);
     }
 }

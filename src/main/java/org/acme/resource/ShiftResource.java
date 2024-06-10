@@ -16,6 +16,7 @@ import jakarta.ws.rs.core.Response.Status;
 import java.util.List;
 import org.acme.dtos.NewShiftDto;
 import org.acme.dtos.ShiftDto;
+import org.acme.dtos.UpdateShiftDto;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -80,13 +81,13 @@ public class ShiftResource {
     @Path("/Edit/{id}")
     @Operation(summary = "Update a shift", description = "Updates an existing shift by ID.")
     @APIResponses({
-        @APIResponse(responseCode = "200", description = "Shift updated successfully", 
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ShiftDto.class))),
+        @APIResponse(responseCode = "200", description = "Shift updated successfully",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = UpdateShiftDto.class))),
         @APIResponse(responseCode = "404", description = "Shift not found")
     })
-    public Response updateShiftById(@PathParam("id") Long shiftId, ShiftDto shiftDto) {
-        boolean updated = shiftService.updateShift(shiftId, shiftDto);
-        return updated ? Response.ok(shiftDto).build() : Response.status(Status.NOT_FOUND).build();
+    public Response updateShiftById(@PathParam("id") Long shiftId, UpdateShiftDto updateShiftDto) {
+        boolean updated = shiftService.updateShift(shiftId, updateShiftDto);
+        return updated ? Response.ok(updateShiftDto).build() : Response.status(Response.Status.NOT_FOUND).build();
     }
 
     @DELETE
