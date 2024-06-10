@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.acme.dtos.MedicSpecialistDto;
 import org.acme.dtos.NewMedicSpecialist;
+import org.acme.dtos.UpdateMedicSpecialistDto;
 import org.acme.entity.MedicSpecialist;
 import org.acme.mappers.MedicSpecialistMapper;
 import org.acme.repository.MedicSpecialistRepository;
@@ -29,6 +30,24 @@ public class MedicSpecialistService {
     @Transactional
     public MedicSpecialistDto create(NewMedicSpecialist newMedicSpecialist) {
         MedicSpecialist medicSpecialist = mapper.toEntity(newMedicSpecialist);
+        medicSpecialistRepository.persist(medicSpecialist);
+        return mapper.toDto(medicSpecialist);
+    }
+    
+    @Transactional
+    public boolean delete(Long id) {
+        return medicSpecialistRepository.deleteById(id);
+    }
+    
+    @Transactional
+    public MedicSpecialistDto update(Long id, UpdateMedicSpecialistDto updateDto) {
+        MedicSpecialist medicSpecialist = medicSpecialistRepository.findById(id);
+        if (medicSpecialist == null) {
+            throw new IllegalArgumentException("Medic specialist not found");
+        }
+        medicSpecialist.name = updateDto.name;
+        medicSpecialist.medicalSpeciality = updateDto.medicalSpecialty;
+        medicSpecialist.consultationLocation = updateDto.consultationLocation;
         medicSpecialistRepository.persist(medicSpecialist);
         return mapper.toDto(medicSpecialist);
     }
