@@ -1,5 +1,6 @@
 package org.acme.resource;
 
+import jakarta.annotation.security.RolesAllowed;
 import org.acme.service.ShiftService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -18,13 +19,24 @@ import org.acme.dtos.NewShiftDto;
 import org.acme.dtos.ShiftDto;
 import org.acme.dtos.UpdateShiftDto;
 import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+import org.eclipse.microprofile.openapi.annotations.security.OAuthFlow;
+import org.eclipse.microprofile.openapi.annotations.security.OAuthFlows;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+@SecurityScheme(
+    securitySchemeName = "keycloak",
+    type = SecuritySchemeType.OAUTH2,
+    flows = @OAuthFlows(password = @OAuthFlow(tokenUrl = "http://localhost:8180/realms/master/protocol/openid-connect/token"))
+)
+
 @Tag(name = "Shift", description = "Operations related to shifts")
+@RolesAllowed("admin")
 @Path("/Shift")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
