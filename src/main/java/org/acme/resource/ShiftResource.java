@@ -98,7 +98,15 @@ public class ShiftResource {
         @APIResponse(responseCode = "404", description = "Shift not found")
     })
     public Response updateShiftById(@PathParam("id") Long shiftId, UpdateShiftDto updateShiftDto) {
-        boolean updated = shiftService.updateShift(shiftId, updateShiftDto);
+        boolean updated;
+        
+        try {
+            updated = shiftService.updateShift(shiftId, updateShiftDto);
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(e.getMessage())
+                    .build();
+        }
         return updated ? Response.ok(updateShiftDto).build() : Response.status(Response.Status.NOT_FOUND).build();
     }
 
