@@ -90,7 +90,7 @@ public class ShiftResource {
     }
 
     @PUT
-    @Path("/Edit/{id}")
+    @Path("/Update/{id}")
     @Operation(summary = "Update a shift", description = "Updates an existing shift by ID.")
     @APIResponses({
         @APIResponse(responseCode = "200", description = "Shift updated successfully",
