@@ -7,6 +7,7 @@ import org.acme.repository.ShiftRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.acme.dtos.NewShiftDto;
@@ -20,15 +21,15 @@ public class ShiftService {
 
     @Inject
     ShiftRepository shiftRepository;
-    
+
     @Inject
     MedicSpecialistRepository medicSpecialistRepository;
 
     @Inject
     ShiftMapper mapper;
-    
+
     @Transactional
-    public List<ShiftDto> getAll(){
+    public List<ShiftDto> getAll() {
         return shiftRepository.listAll().stream()
                 .map(Shift -> mapper.toDto(Shift))
                 .collect(Collectors.toList());
@@ -40,9 +41,14 @@ public class ShiftService {
         if (medicSpecialist == null) {
             throw new IllegalArgumentException("Invalid medicSpecialistId");
         }
+
+        if (newShift.shiftDate.before(new Date())) {
+            throw new IllegalArgumentException("Shift date cannot be in the past");
+        }
         
         Shift shift = mapper.toEntity(newShift);
         shift.medicSpecialist = medicSpecialist;
+        shift.state = "Created";
         shiftRepository.persist(shift);
         return mapper.toDto(shift);
     }
@@ -50,13 +56,13 @@ public class ShiftService {
     @Transactional
     public boolean updateShift(Long id, UpdateShiftDto updateShiftDto) {
         Shift auxShift = shiftRepository.findById(id);
-        
+
         MedicSpecialist medicSpecialist = null;
-        
+
         if (updateShiftDto.medicSpecialistId != null) {
 
             medicSpecialist = medicSpecialistRepository.findById(updateShiftDto.medicSpecialistId);
-            
+
             if (medicSpecialist == null) {
                 throw new IllegalArgumentException("Invalid medicSpecialistId");
             }
@@ -69,6 +75,22 @@ public class ShiftService {
             auxShift.endTime = updateShiftDto.endTime != null ? updateShiftDto.endTime : auxShift.endTime;
             auxShift.medicSpecialist = medicSpecialist != null ? medicSpecialist : auxShift.medicSpecialist;
             auxShift.consultation = updateShiftDto.consultation != null ? updateShiftDto.consultation : auxShift.consultation;
+            return true;
+        }
+    }
+    
+    @Transactional
+    public boolean updateShiftState(Long id, String newState) {
+        if (!newState.equals("Cancelled") && !newState.equals("Closed")) {
+            throw new IllegalArgumentException("State not valid");
+        }
+        
+        Shift auxShift = shiftRepository.findById(id);
+
+        if (auxShift == null) {
+            return false;
+        } else {
+            auxShift.state = newState;
             return true;
         }
     }

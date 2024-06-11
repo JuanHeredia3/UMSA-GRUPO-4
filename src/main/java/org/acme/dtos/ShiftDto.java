@@ -11,6 +11,7 @@ public class ShiftDto {
     public LocalTime startTime;
     public LocalTime endTime;
     public String consultation;
+    public String state;
     public Long medicSpecialistId;
     public List<RecipeDto> recipes;
 }

@@ -3,6 +3,7 @@ package org.acme.service;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -50,8 +51,13 @@ public class RecipeService {
         if (shift == null) {
             throw new IllegalArgumentException("Shift not found");
         }
+        
+        if (shift.state.equals("Cancelled") || shift.state.equals("Created")) {
+            throw new IllegalArgumentException("Shift is not closed");
+        }
 
         Recipe recipe = mapper.toEntity(newRecipe);
+        recipe.date = new Date();
         recipe.shift = shift;
         
         recipeRepository.persist(recipe);
