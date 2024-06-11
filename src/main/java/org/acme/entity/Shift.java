@@ -34,6 +34,9 @@ public class Shift extends PanacheEntity {
 
     @Column(name = "consultation")
     public String consultation;
+    
+    @Column(name = "state")
+    public String state;
 
     @ManyToOne
     public MedicSpecialist medicSpecialist;

@@ -90,7 +90,7 @@ public class ShiftResource {
     }
 
     @PUT
-    @Path("/Edit/{id}")
+    @Path("/Update/{id}")
     @Operation(summary = "Update a shift", description = "Updates an existing shift by ID.")
     @APIResponses({
         @APIResponse(responseCode = "200", description = "Shift updated successfully",
@@ -98,8 +98,37 @@ public class ShiftResource {
         @APIResponse(responseCode = "404", description = "Shift not found")
     })
     public Response updateShiftById(@PathParam("id") Long shiftId, UpdateShiftDto updateShiftDto) {
-        boolean updated = shiftService.updateShift(shiftId, updateShiftDto);
+        boolean updated;
+        
+        try {
+            updated = shiftService.updateShift(shiftId, updateShiftDto);
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(e.getMessage())
+                    .build();
+        }
         return updated ? Response.ok(updateShiftDto).build() : Response.status(Response.Status.NOT_FOUND).build();
+    }
+    
+    @PUT
+    @Path("/UpdateState/{id}/{state}")
+    @Operation(summary = "Update a shift state", description = "Updates a shift state by ID.")
+    @APIResponses({
+        @APIResponse(responseCode = "200", description = "Shift state updated successfully",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Boolean.class))),
+        @APIResponse(responseCode = "404", description = "Shift not found")
+    })
+    public Response updateShiftStateById(@PathParam("id") Long shiftId, @PathParam("state") String newState) {
+        boolean updated;
+        
+        try {
+            updated = shiftService.updateShiftState(shiftId, newState);
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(e.getMessage())
+                    .build();
+        }
+        return updated ? Response.ok(updated).build() : Response.status(Response.Status.NOT_FOUND).build();
     }
 
     @DELETE
