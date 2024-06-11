@@ -50,12 +50,25 @@ public class ShiftService {
     @Transactional
     public boolean updateShift(Long id, UpdateShiftDto updateShiftDto) {
         Shift auxShift = shiftRepository.findById(id);
+        
+        MedicSpecialist medicSpecialist = null;
+        
+        if (updateShiftDto.medicSpecialistId != null) {
+
+            medicSpecialist = medicSpecialistRepository.findById(updateShiftDto.medicSpecialistId);
+            
+            if (medicSpecialist == null) {
+                throw new IllegalArgumentException("Invalid medicSpecialistId");
+            }
+        }
 
         if (auxShift == null) {
             return false;
         } else {
-            auxShift.pacientName = updateShiftDto.pacientName;
-            auxShift.consultation = updateShiftDto.consultation;
+            auxShift.startTime = updateShiftDto.startTime != null ? updateShiftDto.startTime : auxShift.startTime;
+            auxShift.endTime = updateShiftDto.endTime != null ? updateShiftDto.endTime : auxShift.endTime;
+            auxShift.medicSpecialist = medicSpecialist != null ? medicSpecialist : auxShift.medicSpecialist;
+            auxShift.consultation = updateShiftDto.consultation != null ? updateShiftDto.consultation : auxShift.consultation;
             return true;
         }
     }
