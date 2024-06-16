@@ -18,6 +18,10 @@ import java.util.List;
 import org.acme.dtos.NewShiftDto;
 import org.acme.dtos.ShiftDto;
 import org.acme.dtos.UpdateShiftDto;
+import org.acme.exception.BadRequestException;
+import org.acme.exception.CustomException;
+import org.acme.exception.InternalServerErrorException;
+import org.acme.exception.NoContentException;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -53,20 +57,18 @@ public class ShiftResource {
                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = ShiftDto.class))),
         @APIResponse(responseCode = "204", description = "No shifts found")
     })
-    public Response getAll() {
+    public Response getAll() throws CustomException{
         try {
             List<ShiftDto> shiftList = shiftService.getAll();
 
             if (shiftList.isEmpty()) {
-                return Response.status(Response.Status.NO_CONTENT).build();
+                throw new NoContentException();
             }
 
             return Response.ok(shiftList).build();
 
         } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("An error occurred while processing your request")
-                    .build();
+            throw new InternalServerErrorException("An error occurred while processing your request");
         }
     }
     
@@ -78,14 +80,12 @@ public class ShiftResource {
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ShiftDto.class))),
         @APIResponse(responseCode = "400", description = "Invalid input")
     })
-    public Response create(NewShiftDto newShift) {
+    public Response create(NewShiftDto newShift) throws CustomException {
         try {
             ShiftDto createdShift = shiftService.create(newShift);
             return Response.status(Response.Status.CREATED).entity(createdShift).build();
         } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(e.getMessage())
-                    .build();
+            throw new BadRequestException("Invalid argument input. Format error");
         }
     }
 
@@ -97,17 +97,19 @@ public class ShiftResource {
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = UpdateShiftDto.class))),
         @APIResponse(responseCode = "404", description = "Shift not found")
     })
-    public Response updateShiftById(@PathParam("id") Long shiftId, UpdateShiftDto updateShiftDto) {
+    public Response updateShiftById(@PathParam("id") Long shiftId, UpdateShiftDto updateShiftDto) throws CustomException{
         boolean updated;
         
-        try {
-            updated = shiftService.updateShift(shiftId, updateShiftDto);
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(e.getMessage())
-                    .build();
-        }
-        return updated ? Response.ok(updateShiftDto).build() : Response.status(Response.Status.NOT_FOUND).build();
+        if (shiftId == null)
+        	throw new NoContentException("There´s no ID in the request");
+        
+        updated = shiftService.updateShift(shiftId, updateShiftDto);
+        
+        if(updated)
+        	return Response.ok(updateShiftDto).build();
+        else {
+        	throw new BadRequestException("User not found. Invalid format or wrong ID");
+ 		}
     }
     
     @PUT
@@ -118,17 +120,19 @@ public class ShiftResource {
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = Boolean.class))),
         @APIResponse(responseCode = "404", description = "Shift not found")
     })
-    public Response updateShiftStateById(@PathParam("id") Long shiftId, @PathParam("state") String newState) {
+    public Response updateShiftStateById(@PathParam("id") Long shiftId, @PathParam("state") String newState) throws CustomException {
         boolean updated;
         
-        try {
-            updated = shiftService.updateShiftState(shiftId, newState);
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(e.getMessage())
-                    .build();
-        }
-        return updated ? Response.ok(updated).build() : Response.status(Response.Status.NOT_FOUND).build();
+        if (shiftId == null)
+        	throw new NoContentException("There´s no ID in the request");
+        
+        updated = shiftService.updateShiftState(shiftId, newState);
+        
+        if (updated)
+        	return Response.ok(newState).build();
+        else
+        	throw new BadRequestException("User not found. Invalid format or wrong ID");
+        
     }
 
     @DELETE
@@ -138,8 +142,17 @@ public class ShiftResource {
         @APIResponse(responseCode = "204", description = "Shift deleted successfully"),
         @APIResponse(responseCode = "404", description = "Shift not found")
     })
-    public Response deleteShiftById(@PathParam("id") Long shiftId) {
-        boolean deleted = shiftService.deleteShift(shiftId);
-        return deleted ? Response.noContent().build() : Response.status(Status.NOT_FOUND).build();
+    public Response deleteShiftById(@PathParam("id") Long shiftId) throws CustomException {
+        boolean deleted;
+        
+        if (shiftId == null)
+        	throw new NoContentException("There´s no ID in the request");
+        
+        deleted = shiftService.deleteShift(shiftId);
+        
+        if (deleted) 
+        	return Response.ok(shiftId).build();
+        else 
+        	throw new BadRequestException("User not found. Invalid format or wrong ID");
     }
 }

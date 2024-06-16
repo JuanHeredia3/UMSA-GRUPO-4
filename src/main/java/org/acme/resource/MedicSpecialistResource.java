@@ -17,6 +17,11 @@ import java.util.List;
 import org.acme.dtos.MedicSpecialistDto;
 import org.acme.dtos.NewMedicSpecialist;
 import org.acme.dtos.UpdateMedicSpecialistDto;
+import org.acme.exception.BadRequestException;
+import org.acme.exception.CustomException;
+import org.acme.exception.InternalServerErrorException;
+import org.acme.exception.NoContentException;
+import org.acme.exception.NotFoundException;
 import org.acme.service.MedicSpecialistService;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
@@ -28,6 +33,7 @@ import org.eclipse.microprofile.openapi.annotations.security.OAuthFlow;
 import org.eclipse.microprofile.openapi.annotations.security.OAuthFlows;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.jboss.jandex.ThrowsTypeTarget;
 
 @SecurityScheme(
     securitySchemeName = "keycloak",
@@ -53,21 +59,19 @@ public class MedicSpecialistResource {
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MedicSpecialistDto.class))),
         @APIResponse(responseCode = "204", description = "No medical specialists found")
     })
-    public Response getAll() {
+    public Response getAll() throws CustomException{
 
         try {
             List<MedicSpecialistDto> medicSpecialistList = medicSpecialistService.getAll();
 
             if (medicSpecialistList.isEmpty()) {
-                return Response.status(Response.Status.NO_CONTENT).build();
+                throw new NoContentException();
             }
 
             return Response.ok(medicSpecialistList).build();
 
         } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("An error occurred while processing your request")
-                    .build();
+            throw new InternalServerErrorException("An error occurred while processing your request");
         }
     }
     
@@ -79,14 +83,12 @@ public class MedicSpecialistResource {
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MedicSpecialistDto.class))),
         @APIResponse(responseCode = "400", description = "Invalid input")
     })
-    public Response create(NewMedicSpecialist newMedicSpecialist) {
+    public Response create(NewMedicSpecialist newMedicSpecialist) throws CustomException {
         try {
             MedicSpecialistDto createdMedicSpecialist = medicSpecialistService.create(newMedicSpecialist);
             return Response.status(Response.Status.CREATED).entity(createdMedicSpecialist).build();
         } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Invalid input")
-                    .build();
+            throw new BadRequestException("Invalid input");
         }
     }
     
@@ -97,9 +99,14 @@ public class MedicSpecialistResource {
         @APIResponse(responseCode = "204", description = "Medic specialist deleted successfully"),
         @APIResponse(responseCode = "404", description = "Medic specialist not found")
     })
-    public Response deleteShiftById(@PathParam("id") Long id) {
+    public Response deleteShiftById(@PathParam("id") Long id) throws CustomException {
         boolean deleted = medicSpecialistService.delete(id);
-        return deleted ? Response.noContent().build() : Response.status(Status.NOT_FOUND).build();
+        
+        if(deleted)
+        	return Response.noContent().build();
+        else {
+        	throw new NotFoundException();	
+        }
     }
     
     @PUT
@@ -110,16 +117,14 @@ public class MedicSpecialistResource {
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MedicSpecialistDto.class))),
         @APIResponse(responseCode = "404", description = "Medical specialist not found")
     })
-    public Response update(@PathParam("id") Long id, UpdateMedicSpecialistDto updateDto) {
+    public Response update(@PathParam("id") Long id, UpdateMedicSpecialistDto updateDto) throws CustomException {
         try {
             MedicSpecialistDto updatedMedicSpecialist = medicSpecialistService.update(id, updateDto);
             return Response.ok(updatedMedicSpecialist).build();
         } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+            throw new NotFoundException(e.getMessage());
         } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("An error occurred while processing your request")
-                    .build();
+            throw new InternalServerErrorException("An error occurred while processing your request");
         }
     }
 

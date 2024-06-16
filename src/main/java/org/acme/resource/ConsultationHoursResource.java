@@ -15,6 +15,11 @@ import jakarta.ws.rs.core.Response.Status;
 import java.util.List;
 import org.acme.dtos.ConsultationHoursDto;
 import org.acme.dtos.NewConsultationHourDto;
+import org.acme.exception.BadRequestException;
+import org.acme.exception.CustomException;
+import org.acme.exception.InternalServerErrorException;
+import org.acme.exception.NoContentException;
+import org.acme.exception.NotFoundException;
 import org.acme.service.ConsultationHoursService;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
@@ -51,20 +56,18 @@ public class ConsultationHoursResource {
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConsultationHoursDto.class))),
         @APIResponse(responseCode = "204", description = "No consultation hours found")
     })
-    public Response getAll() {
+    public Response getAll() throws CustomException {
 
         try {
             List<ConsultationHoursDto> consultationHoursList = consultationHoursService.getAll();
                     
         if (consultationHoursList.isEmpty()) {
-            return Response.status(Response.Status.NO_CONTENT).build();
+            throw new NoContentException();
         }
 
         return Response.ok(consultationHoursList).build();
         } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("An error occurred while processing your request")
-                    .build();
+            throw new InternalServerErrorException("An error occurred while processing your request");
         }
     }
     
@@ -102,18 +105,14 @@ public class ConsultationHoursResource {
         @APIResponse(responseCode = "400", description = "Invalid input"),
         @APIResponse(responseCode = "500", description = "Internal server error")
     })
-    public Response create(NewConsultationHourDto newConsultationHourDto) {
+    public Response create(NewConsultationHourDto newConsultationHourDto) throws CustomException {
         try {
             ConsultationHoursDto created = consultationHoursService.create(newConsultationHourDto);
             return Response.status(Response.Status.CREATED).entity(created).build();
         } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(e.getMessage())
-                    .build();
+            throw new BadRequestException(e.getMessage());
         } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("An error occurred while processing your request")
-                    .build();
+            throw new InternalServerErrorException("An error occurred while processing your request");
         }
     }
     
@@ -124,8 +123,13 @@ public class ConsultationHoursResource {
         @APIResponse(responseCode = "204", description = "Consultation hour deleted successfully"),
         @APIResponse(responseCode = "404", description = "Consultation hour not found")
     })
-    public Response deleteShiftById(@PathParam("id") Long id) {
+    public Response deleteShiftById(@PathParam("id") Long id) throws CustomException{
         boolean deleted = consultationHoursService.delete(id);
-        return deleted ? Response.noContent().build() : Response.status(Status.NOT_FOUND).build();
+        
+        if(deleted)
+        	return Response.noContent().build();
+        else {
+        	throw new NotFoundException();
+        }
     }
 }

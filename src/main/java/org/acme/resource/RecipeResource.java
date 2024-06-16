@@ -14,6 +14,10 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import org.acme.dtos.NewRecipeDto;
 import org.acme.dtos.RecipeDto;
+import org.acme.exception.BadRequestException;
+import org.acme.exception.CustomException;
+import org.acme.exception.InternalServerErrorException;
+import org.acme.exception.NoContentException;
 import org.acme.service.RecipeService;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
@@ -50,21 +54,19 @@ public class RecipeResource {
                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = RecipeDto.class))),
         @APIResponse(responseCode = "204", description = "No recipes found")
     })
-    public Response getAll() {
+    public Response getAll() throws CustomException{
 
         try {
             List<RecipeDto> recipeList = recipeService.getAll();
 
             if (recipeList.isEmpty()) {
-                return Response.status(Response.Status.NO_CONTENT).build();
+                throw new NoContentException();
             }
 
             return Response.ok(recipeList).build();
 
         } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("An error occurred while processing your request")
-                    .build();
+            throw new InternalServerErrorException("An error occurred while processing your request");
         }
     }
 
@@ -76,16 +78,18 @@ public class RecipeResource {
                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = RecipeDto.class))),
         @APIResponse(responseCode = "204", description = "recipe not found")
     })
-    public Response getById(@PathParam("id") Long id) {
+    public Response getById(@PathParam("id") Long id) throws CustomException {
 
         try {
             RecipeDto recipe = recipeService.get(id);
 
-            return recipe == null ? Response.status(Response.Status.NO_CONTENT).build() : Response.ok(recipe).build();
+            if(recipe == null)
+            	throw new NoContentException();
+            else {
+            	return Response.ok(recipe).build();
+            }
         } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("An error occurred while processing your request")
-                    .build();
+            throw new InternalServerErrorException("An error occurred while processing your request");
         }
     }
     
@@ -97,16 +101,18 @@ public class RecipeResource {
                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = RecipeDto.class))),
         @APIResponse(responseCode = "204", description = "recipe not found")
     })
-    public Response delete(@PathParam("id") Long id) {
+    public Response delete(@PathParam("id") Long id) throws CustomException {
 
         try {
             boolean isDeleted = recipeService.deleteRecipe(id);
 
-            return isDeleted ? Response.ok(isDeleted).build() : Response.status(Response.Status.BAD_REQUEST).build();
+            if (isDeleted)
+            	return Response.ok(isDeleted).build();
+            else {
+            	throw new BadRequestException();
+            }
         } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("An error occurred while processing your request")
-                    .build();
+            throw new InternalServerErrorException("An error occurred while processing your request");
         }
     }
     
@@ -118,14 +124,14 @@ public class RecipeResource {
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = RecipeDto.class))),
         @APIResponse(responseCode = "400", description = "Invalid input")
     })
-    public Response create(NewRecipeDto newRecipe) {
+    public Response create(NewRecipeDto newRecipe) throws CustomException {
         try {
             RecipeDto createdRecipe = recipeService.create(newRecipe);
             return Response.status(Response.Status.CREATED).entity(createdRecipe).build();
         } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid shiftId").build();
+            throw new BadRequestException("Invalid shiftId");
         } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid input").build();
+            throw new BadRequestException("Invalid input");
         }
     }
 }
