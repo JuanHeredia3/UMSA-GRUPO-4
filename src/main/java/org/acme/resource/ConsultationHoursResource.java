@@ -68,7 +68,31 @@ public class ConsultationHoursResource {
         }
     }
     
-    
+    @GET
+    @Path("/GetByMedicSpecialistId/{medicSpecialistId}")
+    @Operation(summary = "Get consultations hours by medic specialist id", description = "Returns a list of all consultation hours.")
+    @APIResponses({
+        @APIResponse(responseCode = "200", description = "List of consultation hours",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConsultationHoursDto.class))),
+        @APIResponse(responseCode = "204", description = "No consultation hours found")
+    })
+    public Response getByMedicSpecialistId(@PathParam("medicSpecialistId") Long id) {
+
+        try {
+            List<ConsultationHoursDto> consultationHoursList = consultationHoursService.getByMedicSpecialistId(id);
+                    
+        if (consultationHoursList.isEmpty()) {
+            return Response.status(Response.Status.NO_CONTENT).build();
+        }
+
+        return Response.ok(consultationHoursList).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("An error occurred while processing your request")
+                    .build();
+        }
+    }
+        
     @POST
     @Path("/Create")
     @Operation(summary = "Create a new consultation hour", description = "Creates a new consultation hour.")

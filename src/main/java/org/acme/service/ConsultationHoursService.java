@@ -31,6 +31,12 @@ public class ConsultationHoursService {
                 .map(consultationHours -> mapper.toDto(consultationHours))
                 .collect(Collectors.toList());
     }
+    
+    public  List<ConsultationHoursDto> getByMedicSpecialistId(Long id){
+        return consultationHoursRepository.getByMedicSpecialistId(id).stream()
+                .map(ConsultationHours -> mapper.toDto(ConsultationHours))
+                .collect(Collectors.toList());
+    }
 
     @Transactional
     public ConsultationHoursDto create(NewConsultationHourDto newConsultationHourDto) {
