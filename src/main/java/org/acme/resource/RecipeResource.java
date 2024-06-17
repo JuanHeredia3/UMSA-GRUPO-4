@@ -14,10 +14,7 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import org.acme.dtos.NewRecipeDto;
 import org.acme.dtos.RecipeDto;
-import org.acme.exception.BadRequestException;
-import org.acme.exception.CustomException;
-import org.acme.exception.InternalServerErrorException;
-import org.acme.exception.NoContentException;
+import org.acme.exceptions.BusinessRuleException;
 import org.acme.service.RecipeService;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
@@ -31,9 +28,9 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @SecurityScheme(
-    securitySchemeName = "keycloak",
-    type = SecuritySchemeType.OAUTH2,
-    flows = @OAuthFlows(password = @OAuthFlow(tokenUrl = "http://localhost:8180/realms/master/protocol/openid-connect/token"))
+        securitySchemeName = "keycloak",
+        type = SecuritySchemeType.OAUTH2,
+        flows = @OAuthFlows(password = @OAuthFlow(tokenUrl = "http://localhost:8180/realms/master/protocol/openid-connect/token"))
 )
 
 @Tag(name = "Recipe", description = "Operations related to medical recipes")
@@ -54,19 +51,21 @@ public class RecipeResource {
                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = RecipeDto.class))),
         @APIResponse(responseCode = "204", description = "No recipes found")
     })
-    public Response getAll() throws CustomException{
+    public Response getAll() {
 
         try {
             List<RecipeDto> recipeList = recipeService.getAll();
 
             if (recipeList.isEmpty()) {
-                throw new NoContentException();
+                return Response.status(Response.Status.NO_CONTENT).build();
             }
 
             return Response.ok(recipeList).build();
 
         } catch (Exception e) {
-            throw new InternalServerErrorException("An error occurred while processing your request");
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("An error occurred while processing your request")
+                    .build();
         }
     }
 
@@ -78,60 +77,54 @@ public class RecipeResource {
                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = RecipeDto.class))),
         @APIResponse(responseCode = "204", description = "recipe not found")
     })
-    public Response getById(@PathParam("id") Long id) throws CustomException {
+    public Response getById(@PathParam("id") Long id) {
 
         try {
             RecipeDto recipe = recipeService.get(id);
 
-            if(recipe == null)
-            	throw new NoContentException();
-            else {
-            	return Response.ok(recipe).build();
-            }
+            return recipe == null ? Response.status(Response.Status.NO_CONTENT).build() : Response.ok(recipe).build();
         } catch (Exception e) {
-            throw new InternalServerErrorException("An error occurred while processing your request");
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("An error occurred while processing your request")
+                    .build();
         }
     }
-    
+
     @DELETE
     @Path("/Delete/{id}")
-    @Operation(summary = "delete a recipe")
+    @Operation(summary = "Delete a recipe")
     @APIResponses({
         @APIResponse(responseCode = "200", description = "true",
                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = RecipeDto.class))),
         @APIResponse(responseCode = "204", description = "recipe not found")
     })
-    public Response delete(@PathParam("id") Long id) throws CustomException {
+    public Response delete(@PathParam("id") Long id) {
 
         try {
             boolean isDeleted = recipeService.deleteRecipe(id);
 
-            if (isDeleted)
-            	return Response.ok(isDeleted).build();
-            else {
-            	throw new BadRequestException();
-            }
+            return isDeleted ? Response.ok(isDeleted).build() : Response.status(Response.Status.NOT_FOUND).build();
         } catch (Exception e) {
-            throw new InternalServerErrorException("An error occurred while processing your request");
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("An error occurred while processing your request")
+                    .build();
         }
     }
-    
+
     @POST
     @Path("/Create")
     @Operation(summary = "Create a new recipe", description = "Creates a new recipe.")
     @APIResponses({
         @APIResponse(responseCode = "201", description = "Recipe created",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = RecipeDto.class))),
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = RecipeDto.class))),
         @APIResponse(responseCode = "400", description = "Invalid input")
     })
-    public Response create(NewRecipeDto newRecipe) throws CustomException {
+    public Response create(NewRecipeDto newRecipe) throws BusinessRuleException {
         try {
             RecipeDto createdRecipe = recipeService.create(newRecipe);
             return Response.status(Response.Status.CREATED).entity(createdRecipe).build();
-        } catch (IllegalArgumentException e) {
-            throw new BadRequestException("Invalid shiftId");
-        } catch (Exception e) {
-            throw new BadRequestException("Invalid input");
+        } catch (BusinessRuleException e) {
+            throw new BusinessRuleException(e.getMessage(), Response.Status.BAD_REQUEST.getStatusCode());
         }
     }
 }

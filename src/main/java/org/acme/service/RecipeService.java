@@ -3,6 +3,7 @@ package org.acme.service;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.core.Response;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +12,7 @@ import org.acme.dtos.NewRecipeDto;
 import org.acme.dtos.RecipeDto;
 import org.acme.entity.Recipe;
 import org.acme.entity.Shift;
+import org.acme.exceptions.BusinessRuleException;
 import org.acme.mappers.RecipeMapper;
 import org.acme.repository.RecipeRepository;
 import org.acme.repository.ShiftRepository;
@@ -37,23 +39,19 @@ public class RecipeService {
     @Transactional
     public RecipeDto get(Long id) {
         Optional<Recipe> recipeOptional = recipeRepository.findByIdOptional(id);
-        if (recipeOptional.isPresent()) {
-            return mapper.toDto(recipeOptional.get());
-        } else {
-            throw new RuntimeException("Recipe not found");
-        }
+        return mapper.toDto(recipeOptional.get());
     }
 
     @Transactional
-    public RecipeDto create(NewRecipeDto newRecipe) {
+    public RecipeDto create(NewRecipeDto newRecipe) throws BusinessRuleException {
         Shift shift = shiftRepository.findById(newRecipe.shiftId);
         
         if (shift == null) {
-            throw new IllegalArgumentException("Shift not found");
+            throw new BusinessRuleException("Shift not found", Response.Status.BAD_REQUEST.getStatusCode());
         }
         
         if (shift.state.equals("Cancelled") || shift.state.equals("Created")) {
-            throw new IllegalArgumentException("Shift is not closed");
+            throw new BusinessRuleException("Shift is not closed", Response.Status.BAD_REQUEST.getStatusCode());
         }
 
         Recipe recipe = mapper.toEntity(newRecipe);
