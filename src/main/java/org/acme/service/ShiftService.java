@@ -7,6 +7,7 @@ import org.acme.repository.ShiftRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.core.Response;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,6 +15,7 @@ import org.acme.dtos.NewShiftDto;
 import org.acme.dtos.ShiftDto;
 import org.acme.dtos.UpdateShiftDto;
 import org.acme.entity.MedicSpecialist;
+import org.acme.exceptions.BusinessRuleException;
 import org.acme.repository.MedicSpecialistRepository;
 
 @ApplicationScoped
@@ -36,14 +38,14 @@ public class ShiftService {
     }
 
     @Transactional
-    public ShiftDto create(NewShiftDto newShift) {
+    public ShiftDto create(NewShiftDto newShift) throws BusinessRuleException {
         MedicSpecialist medicSpecialist = medicSpecialistRepository.findById(newShift.medicSpecialistId);
         if (medicSpecialist == null) {
-            throw new IllegalArgumentException("Invalid medicSpecialistId");
+            throw new BusinessRuleException("Medic Specialist not found", Response.Status.BAD_REQUEST.getStatusCode());
         }
 
         if (newShift.shiftDate.before(new Date())) {
-            throw new IllegalArgumentException("Shift date cannot be in the past");
+            throw new BusinessRuleException("Shift date cannot be in the past", Response.Status.BAD_REQUEST.getStatusCode());
         }
         
         Shift shift = mapper.toEntity(newShift);
@@ -54,7 +56,7 @@ public class ShiftService {
     }
 
     @Transactional
-    public boolean updateShift(Long id, UpdateShiftDto updateShiftDto) {
+    public boolean updateShift(Long id, UpdateShiftDto updateShiftDto) throws BusinessRuleException {
         Shift auxShift = shiftRepository.findById(id);
 
         MedicSpecialist medicSpecialist = null;
@@ -64,7 +66,7 @@ public class ShiftService {
             medicSpecialist = medicSpecialistRepository.findById(updateShiftDto.medicSpecialistId);
 
             if (medicSpecialist == null) {
-                throw new IllegalArgumentException("Invalid medicSpecialistId");
+                throw new BusinessRuleException("Medic Specialist not found");
             }
         }
 
@@ -80,9 +82,9 @@ public class ShiftService {
     }
     
     @Transactional
-    public boolean updateShiftState(Long id, String newState) {
+    public boolean updateShiftState(Long id, String newState) throws BusinessRuleException {
         if (!newState.equals("Cancelled") && !newState.equals("Closed")) {
-            throw new IllegalArgumentException("State not valid");
+            throw new BusinessRuleException("State not valid", Response.Status.BAD_REQUEST.getStatusCode());
         }
         
         Shift auxShift = shiftRepository.findById(id);

@@ -9,6 +9,7 @@ import org.acme.dtos.ConsultationHoursDto;
 import org.acme.dtos.NewConsultationHourDto;
 import org.acme.entity.ConsultationHours;
 import org.acme.entity.MedicSpecialist;
+import org.acme.exceptions.BusinessRuleException;
 import org.acme.mappers.ConsultationHoursMapper;
 import org.acme.repository.ConsultationHoursRepository;
 import org.acme.repository.MedicSpecialistRepository;
@@ -31,14 +32,20 @@ public class ConsultationHoursService {
                 .map(consultationHours -> mapper.toDto(consultationHours))
                 .collect(Collectors.toList());
     }
+    
+    public  List<ConsultationHoursDto> getByMedicSpecialistId(Long id){
+        return consultationHoursRepository.getByMedicSpecialistId(id).stream()
+                .map(ConsultationHours -> mapper.toDto(ConsultationHours))
+                .collect(Collectors.toList());
+    }
 
     @Transactional
-    public ConsultationHoursDto create(NewConsultationHourDto newConsultationHourDto) {
+    public ConsultationHoursDto create(NewConsultationHourDto newConsultationHourDto) throws BusinessRuleException {
         MedicSpecialist medicSpecialist = medicSpecialistRepository.findById(newConsultationHourDto.medicSpecialistId);
 
         if (medicSpecialist == null) {
-            throw new IllegalArgumentException("Medical specialist not found");
-        }
+            throw new BusinessRuleException("Medical specialist not found");
+        }   
 
         ConsultationHours consultationHours = mapper.toEntity(newConsultationHourDto);
         consultationHours.medicSpecialist = medicSpecialist;

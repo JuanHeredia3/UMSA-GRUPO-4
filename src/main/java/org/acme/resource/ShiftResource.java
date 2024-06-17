@@ -18,6 +18,7 @@ import java.util.List;
 import org.acme.dtos.NewShiftDto;
 import org.acme.dtos.ShiftDto;
 import org.acme.dtos.UpdateShiftDto;
+import org.acme.exceptions.BusinessRuleException;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -30,9 +31,9 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @SecurityScheme(
-    securitySchemeName = "keycloak",
-    type = SecuritySchemeType.OAUTH2,
-    flows = @OAuthFlows(password = @OAuthFlow(tokenUrl = "http://localhost:8180/realms/master/protocol/openid-connect/token"))
+        securitySchemeName = "keycloak",
+        type = SecuritySchemeType.OAUTH2,
+        flows = @OAuthFlows(password = @OAuthFlow(tokenUrl = "http://localhost:8180/realms/master/protocol/openid-connect/token"))
 )
 
 @Tag(name = "Shift", description = "Operations related to shifts")
@@ -69,23 +70,21 @@ public class ShiftResource {
                     .build();
         }
     }
-    
+
     @POST
     @Path("/Create")
     @Operation(summary = "Create a new shift", description = "Creates a new shift.")
     @APIResponses({
-        @APIResponse(responseCode = "201", description = "Shift created successfully", 
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ShiftDto.class))),
+        @APIResponse(responseCode = "201", description = "Shift created successfully",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ShiftDto.class))),
         @APIResponse(responseCode = "400", description = "Invalid input")
     })
-    public Response create(NewShiftDto newShift) {
+    public Response create(NewShiftDto newShift) throws BusinessRuleException {
         try {
             ShiftDto createdShift = shiftService.create(newShift);
             return Response.status(Response.Status.CREATED).entity(createdShift).build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(e.getMessage())
-                    .build();
+        } catch (BusinessRuleException e) {
+            throw new BusinessRuleException(e.getMessage(), Response.Status.BAD_REQUEST.getStatusCode());
         }
     }
 
@@ -94,39 +93,35 @@ public class ShiftResource {
     @Operation(summary = "Update a shift", description = "Updates an existing shift by ID.")
     @APIResponses({
         @APIResponse(responseCode = "200", description = "Shift updated successfully",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = UpdateShiftDto.class))),
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = UpdateShiftDto.class))),
         @APIResponse(responseCode = "404", description = "Shift not found")
     })
-    public Response updateShiftById(@PathParam("id") Long shiftId, UpdateShiftDto updateShiftDto) {
+    public Response updateShiftById(@PathParam("id") Long shiftId, UpdateShiftDto updateShiftDto) throws BusinessRuleException {
         boolean updated;
         
         try {
             updated = shiftService.updateShift(shiftId, updateShiftDto);
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(e.getMessage())
-                    .build();
+        } catch (BusinessRuleException e) {
+            throw new BusinessRuleException(e.getMessage(), Response.Status.BAD_REQUEST.getStatusCode());
         }
         return updated ? Response.ok(updateShiftDto).build() : Response.status(Response.Status.NOT_FOUND).build();
     }
-    
+
     @PUT
     @Path("/UpdateState/{id}/{state}")
     @Operation(summary = "Update a shift state", description = "Updates a shift state by ID.")
     @APIResponses({
         @APIResponse(responseCode = "200", description = "Shift state updated successfully",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Boolean.class))),
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = Boolean.class))),
         @APIResponse(responseCode = "404", description = "Shift not found")
     })
-    public Response updateShiftStateById(@PathParam("id") Long shiftId, @PathParam("state") String newState) {
+    public Response updateShiftStateById(@PathParam("id") Long shiftId, @PathParam("state") String newState) throws BusinessRuleException {
         boolean updated;
         
         try {
             updated = shiftService.updateShiftState(shiftId, newState);
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(e.getMessage())
-                    .build();
+        } catch (BusinessRuleException e) {
+            throw new BusinessRuleException(e.getMessage(), Response.Status.BAD_REQUEST.getStatusCode());
         }
         return updated ? Response.ok(updated).build() : Response.status(Response.Status.NOT_FOUND).build();
     }
