@@ -7,7 +7,7 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.acme.dtos.MedicSpecialistDto;
-import org.acme.dtos.NewMedicSpecialist;
+import org.acme.dtos.NewMedicSpecialistDto;
 import org.acme.dtos.UpdateMedicSpecialistDto;
 import org.acme.entity.MedicSpecialist;
 import org.acme.exceptions.BusinessRuleException;
@@ -30,7 +30,7 @@ public class MedicSpecialistService {
     }
     
     @Transactional
-    public MedicSpecialistDto create(NewMedicSpecialist newMedicSpecialist) {
+    public MedicSpecialistDto create(NewMedicSpecialistDto newMedicSpecialist) {
         MedicSpecialist medicSpecialist = mapper.toEntity(newMedicSpecialist);
         medicSpecialistRepository.persist(medicSpecialist);
         return mapper.toDto(medicSpecialist);
