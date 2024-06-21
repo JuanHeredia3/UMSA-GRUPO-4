@@ -101,7 +101,7 @@ public class RecipeResource {
     public Response delete(@PathParam("id") Long id) {
 
         try {
-            boolean isDeleted = recipeService.deleteRecipe(id);
+            boolean isDeleted = recipeService.delete(id);
 
             return isDeleted ? Response.ok(isDeleted).build() : Response.status(Response.Status.NOT_FOUND).build();
         } catch (Exception e) {

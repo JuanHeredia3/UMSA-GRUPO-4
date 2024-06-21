@@ -1,7 +1,7 @@
 package org.acme.mappers;
 
 import org.acme.dtos.MedicSpecialistDto;
-import org.acme.dtos.NewMedicSpecialist;
+import org.acme.dtos.NewMedicSpecialistDto;
 import org.acme.entity.MedicSpecialist;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -20,5 +20,5 @@ public interface MedicSpecialistMapper {
     MedicSpecialist toEntity(MedicSpecialistDto medicSpecialistDto);
     
     @Mapping(target = "id", ignore = true)
-    MedicSpecialist toEntity(NewMedicSpecialist newMedicSpecialist);
+    MedicSpecialist toEntity(NewMedicSpecialistDto newMedicSpecialist);
 }
