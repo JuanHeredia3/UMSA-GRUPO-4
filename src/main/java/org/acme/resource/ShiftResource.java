@@ -134,7 +134,7 @@ public class ShiftResource {
         @APIResponse(responseCode = "404", description = "Shift not found")
     })
     public Response deleteShiftById(@PathParam("id") Long shiftId) {
-        boolean deleted = shiftService.deleteShift(shiftId);
+        boolean deleted = shiftService.delete(shiftId);
         return deleted ? Response.noContent().build() : Response.status(Status.NOT_FOUND).build();
     }
 }

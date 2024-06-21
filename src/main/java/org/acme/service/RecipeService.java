@@ -64,7 +64,7 @@ public class RecipeService {
     }
 
     @Transactional
-    public boolean deleteRecipe(Long id) {
+    public boolean delete(Long id) {
         return recipeRepository.deleteById(id);
     }
 }

@@ -1,6 +1,6 @@
 package org.acme.dtos;
 
-public class NewMedicSpecialist {
+public class NewMedicSpecialistDto {
 
     public String name;
     public String medicalSpeciality;

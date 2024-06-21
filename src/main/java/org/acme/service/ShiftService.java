@@ -98,7 +98,7 @@ public class ShiftService {
     }
 
     @Transactional
-    public boolean deleteShift(Long shiftId) {
+    public boolean delete(Long shiftId) {
         return shiftRepository.deleteById(shiftId);
     }
 }

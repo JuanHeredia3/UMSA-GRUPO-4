@@ -15,7 +15,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import java.util.List;
 import org.acme.dtos.MedicSpecialistDto;
-import org.acme.dtos.NewMedicSpecialist;
+import org.acme.dtos.NewMedicSpecialistDto;
 import org.acme.dtos.UpdateMedicSpecialistDto;
 import org.acme.exceptions.BusinessRuleException;
 import org.acme.service.MedicSpecialistService;
@@ -80,7 +80,7 @@ public class MedicSpecialistResource {
                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = MedicSpecialistDto.class))),
         @APIResponse(responseCode = "400", description = "Invalid input")
     })
-    public Response create(NewMedicSpecialist newMedicSpecialist) {
+    public Response create(NewMedicSpecialistDto newMedicSpecialist) {
         try {
             MedicSpecialistDto createdMedicSpecialist = medicSpecialistService.create(newMedicSpecialist);
             return Response.status(Response.Status.CREATED).entity(createdMedicSpecialist).build();
