@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 public class RecipeResourceTest {
     
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+//    @TestSecurity(user = "admin", roles = {"admin"})
     public void testGetAllRecipes() {
         //Scenario: El sistema devuelve todas las recetas
 

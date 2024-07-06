@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 public class ConsultationHoursResourceTest {
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+//    @TestSecurity(user = "admin", roles = {"admin"})
     public void testGetAllConsultationHours_Success() {
         //Scenario: El sistema devuelve todos los horarios de consulta
 

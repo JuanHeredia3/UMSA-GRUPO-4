@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 public class MedicSpecialistResourceTest {
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+//    @TestSecurity(user = "admin", roles = {"admin"})
     public void testGetAllMedicSpecialists() {
         //Scenario: El sistema devuelve todos los especialistas medicos
 
