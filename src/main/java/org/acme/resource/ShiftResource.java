@@ -30,12 +30,6 @@ import org.eclipse.microprofile.openapi.annotations.security.OAuthFlows;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-//@SecurityScheme(
-//        securitySchemeName = "keycloak",
-//        type = SecuritySchemeType.OAUTH2,
-//        flows = @OAuthFlows(password = @OAuthFlow(tokenUrl = "http://localhost:8180/realms/master/protocol/openid-connect/token"))
-//)
-
 @Tag(name = "Shift", description = "Operations related to shifts")
 //@RolesAllowed("admin")
 @Path("/Shift")
@@ -67,6 +61,33 @@ public class ShiftResource {
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("An error occurred while processing your request")
+                    .build();
+        }
+    }
+    
+    @GET
+    @Path("/GetByMedicSpecialistId/{medicSpecialistId}")
+    @Operation(summary = "Get all shifts by medic specialist id", description = "Returns a list of all shifts by medic specialist ID.")
+    @APIResponses({
+        @APIResponse(responseCode = "200", description = "List of shifts",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ShiftDto.class))),
+        @APIResponse(responseCode = "204", description = "No shifts found")
+    })
+    public Response getByMedicSpecialistId(@PathParam("medicSpecialistId") Long id) {
+        try {
+            List<ShiftDto> shiftList = shiftService.getByMedicSpecialistId(id);
+
+            if (shiftList.isEmpty()) {
+                return Response.status(Response.Status.NO_CONTENT).build();
+            }
+
+            return Response.ok(shiftList).build();
+
+        } catch (Exception e) {
+            // Log the error for debugging
+            e.printStackTrace(); // Or use a logging framework
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("An error occurred while processing your request: " + e.getMessage())
                     .build();
         }
     }

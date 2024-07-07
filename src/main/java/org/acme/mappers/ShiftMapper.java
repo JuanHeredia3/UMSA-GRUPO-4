@@ -13,10 +13,9 @@ public interface ShiftMapper {
     ShiftDto toDto(Shift shift);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "medicSpecialist", ignore = true)
     Shift toEntity(ShiftDto shiftDto);
     
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "medicSpecialist", ignore = true)
+    @Mapping(source = "medicSpecialistId", target = "medicSpecialist.id")
     Shift toEntity(NewShiftDto newShiftDto);
 }
