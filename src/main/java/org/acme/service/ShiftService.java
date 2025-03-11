@@ -36,6 +36,13 @@ public class ShiftService {
                 .map(Shift -> mapper.toDto(Shift))
                 .collect(Collectors.toList());
     }
+    
+    @Transactional
+    public List<ShiftDto> getByMedicSpecialistId(Long medicSpecialistId) {
+        return shiftRepository.getByMedicSpecialistId(medicSpecialistId).stream()
+                .map(shift -> mapper.toDto(shift))
+                .collect(Collectors.toList());
+    }
 
     @Transactional
     public ShiftDto create(NewShiftDto newShift) throws BusinessRuleException {

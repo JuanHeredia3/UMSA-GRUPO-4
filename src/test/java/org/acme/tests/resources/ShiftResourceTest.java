@@ -11,7 +11,7 @@ import static org.hamcrest.Matchers.*;
 public class ShiftResourceTest {
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+//    @TestSecurity(user = "admin", roles = {"admin"})
     public void testGetAllShifts() {
         //Scenario: El sistema devuelve todos los turnos
 

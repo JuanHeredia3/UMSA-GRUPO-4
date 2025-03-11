@@ -27,14 +27,14 @@ import org.eclipse.microprofile.openapi.annotations.security.OAuthFlows;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-@SecurityScheme(
-        securitySchemeName = "keycloak",
-        type = SecuritySchemeType.OAUTH2,
-        flows = @OAuthFlows(password = @OAuthFlow(tokenUrl = "http://localhost:8180/realms/master/protocol/openid-connect/token"))
-)
+//@SecurityScheme(
+//        securitySchemeName = "keycloak",
+//        type = SecuritySchemeType.OAUTH2,
+//        flows = @OAuthFlows(password = @OAuthFlow(tokenUrl = "http://localhost:8180/realms/master/protocol/openid-connect/token"))
+//)
 
 @Tag(name = "Recipe", description = "Operations related to medical recipes")
-@RolesAllowed("admin")
+//@RolesAllowed("admin")
 @Path("/Recipe")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
